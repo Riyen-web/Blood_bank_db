@@ -55,6 +55,8 @@ The system replaces manual record-keeping with a secure, centralized database, e
 <img width="1452" height="791" alt="Screenshot 2025-12-03 110545" src="https://github.com/user-attachments/assets/cdd7f1fa-5c65-4339-b662-3c490fac9be3" />
 
 
+
+
 ## 📂 Project Structure
 
 ```text
