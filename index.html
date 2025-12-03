@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank Management System | MediFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-background: #F5F8FA; --color-surface: #FFFFFF; --color-primary-blue: #1976D2;
+            --color-primary-blue-glow: rgba(25, 118, 210, 0.3); --color-accent-blue: #2196F3;
+            --color-text-primary: #333333; --color-text-secondary: #757575; --color-border-light: #E0E0E0;
+            --color-success: #4CAF50; --color-success-bg: rgba(76, 175, 80, 0.1);
+            --color-error: #EF5350; --color-error-bg: rgba(239, 83, 80, 0.1);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--color-background); color: var(--color-text-primary); line-height: 1.7; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: linear-gradient(to right, #E3F2FD, #BBDEFB); color: var(--color-primary-blue); padding: 2rem 0; text-align: center; border-bottom: 2px solid var(--color-border-light); }
+        header h1 { font-weight: 700; font-size: 2.8rem; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .system-icon { width: 45px; height: 45px; fill: var(--color-primary-blue); }
+        nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; background-color: var(--color-surface); padding: 1rem; margin: 2rem auto; border-radius: 15px; width: 95%; max-width: 1200px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); }
+        nav button { background: none; border: none; color: var(--color-text-secondary); padding: 0.8rem 1.5rem; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; position: relative; border-radius: 10px; }
+        nav button:hover, nav button.active { color: var(--color-primary-blue); background-color: var(--color-background); }
+        main { flex-grow: 1; padding: 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
+        .view { display: none; background-color: var(--color-surface); padding: 3rem; border-radius: 20px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08); animation: slideInUp 0.6s ease-out forwards; border: 1px solid var(--color-border-light); }
+        .view.active { display: block; }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .view h2 { color: var(--color-primary-blue); margin-bottom: 2.5rem; font-weight: 700; font-size: 2.2rem; text-align: center; }
+        h3 { color: var(--color-primary-blue); margin-bottom: 1.5rem; font-weight: 600; }
+        form { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        form .full-width { grid-column: 1 / -1; }
+        input, select, textarea { width: 100%; padding: 1rem 1.5rem; font-size: 1rem; font-family: 'Poppins', sans-serif; border: 1px solid var(--color-border-light); border-radius: 12px; transition: all 0.3s ease; background-color: var(--color-background); color: var(--color-text-primary); }
+        input:focus, select:focus, textarea:focus { border-color: var(--color-accent-blue); box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2); outline: none; }
+        button.action-btn { background: linear-gradient(to right, var(--color-primary-blue), var(--color-accent-blue)); color: white; border: none; padding: 1.1rem 1.8rem; font-size: 1.1rem; font-weight: 600; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px var(--color-primary-blue-glow); letter-spacing: 0.5px; }
+        button.action-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 30px var(--color-primary-blue-glow); }
+        #status-message { padding: 1.2rem; margin-bottom: 2rem; border-radius: 12px; text-align: center; font-weight: 600; display: none; border: 1px solid transparent; animation: slideInDown 0.5s ease-out forwards; word-wrap: break-word; }
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        #status-message.success { background-color: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); display:block; }
+        #status-message.error { background-color: var(--color-error-bg); color: var(--color-error); border-color: var(--color-error); display:block; }
+        .result-container { margin-top: 2.5rem; }
+        .result-card { background-color: var(--color-surface); padding: 1.5rem; border: 1px solid var(--color-border-light); border-radius: 15px; margin-bottom: 1.2rem; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; display: flex; justify-content: space-between; align-items: center; }
+        .result-card:hover { transform: translateY(-5px); border-color: var(--color-accent-blue); }
+        .result-card strong { color: var(--color-primary-blue); }
+        .staff-list-item { cursor: pointer; padding: 1rem; border-bottom: 1px solid var(--color-border-light); transition: all 0.2s ease; }
+        .staff-list-item:hover, .staff-list-item.selected { background-color: #E3F2FD; }
+        .staff-list-item strong { color: var(--color-primary-blue); }
+        table { width: 100%; border-collapse: collapse; margin-top: 2rem; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); }
+        th, td { padding: 1.2rem 1.8rem; text-align: left; border-bottom: 1px solid var(--color-border-light); }
+        th { background-color: #E3F2FD; color: var(--color-primary-blue); font-weight: 700; text-transform: uppercase; font-size: 0.95rem; }
+        tr:nth-child(even) { background-color: #F8F9FA; }
+        tr:hover { background-color: #E1F5FE; }
+        .view-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+        @media (max-width: 992px) { .view-grid { grid-template-columns: 1fr; } }
+        .task-list { list-style: none; padding: 0; max-height: 250px; overflow-y: auto; border: 1px solid var(--color-border-light); border-radius: 12px; }
+        .task-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid var(--color-border-light); }
+        .task-list button { background: none; border: 1px solid; border-radius: 8px; padding: 0.3rem 0.8rem; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+        .task-list button.assign-task { color: var(--color-success); border-color: var(--color-success); }
+        .task-list button.remove-task { color: var(--color-error); border-color: var(--color-error); }
+        #add-staff-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; animation: fadeInModal 0.3s; }
+        #comprehensive-report-container { margin-top: 2.5rem; }
+        .donor-report-header { background-color: #E3F2FD; padding: 2rem; border-radius: 15px; margin-bottom: 2rem; }
+        .history-item { border: 1px solid var(--color-border-light); border-radius: 15px; margin-bottom: 1.5rem; overflow: hidden; }
+        .history-header { background-color: #F5F8FA; padding: 1rem 1.5rem; font-weight: 600; border-bottom: 1px solid var(--color-border-light); display: flex; justify-content: space-between; align-items: center; }
+        .history-header .success { color: var(--color-success); } .history-header .error { color: var(--color-error); }
+        .history-body { padding: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .history-body p { margin: 0; }
+        footer { margin-top: 3rem; padding: 1.5rem; text-align: center; color: var(--color-text-secondary); border-top: 1px solid var(--color-border-light); }
+    </style>
+</head>
+<body>
+    <header><h1><svg class="system-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/></svg>MediFlow Blood Bank</h1></header>
+    
+    <nav>
+        <button data-view-id="donor-registration-view" class="active">Donor Registration</button>
+        <button data-view-id="donor-search-view">Donor Search</button>
+        <button data-view-id="comprehensive-report-view">Comprehensive Report</button>
+        <button data-view-id="screening-view">Screening</button>
+        <button data-view-id="collection-view">Collection</button>
+        <button data-view-id="inventory-view">Inventory</button>
+        <button data-view-id="reporting-view">Reporting</button>
+        <button data-view-id="staff-view">Staff Management</button>
+        <button data-view-id="organization-view">Organizations</button>
+    </nav>
+    
+    <main id="main-content">
+        <div id="status-message"></div>
+
+        <div id="donor-registration-view" class="view active">
+            <h2>Register a New Donor</h2>
+            <form id="donor-registration-form"><input type="text" id="reg-first-name" placeholder="First Name" required><input type="text" id="reg-last-name" placeholder="Last Name" required><input type="date" id="reg-dob" required><select id="reg-gender" required><option value="" disabled selected>-- Gender --</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select><select id="reg-blood-group" required><option value="" disabled selected>-- Blood Group --</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select><input type="tel" id="reg-phone" placeholder="Phone Number (Optional)"><input type="email" id="reg-email" placeholder="Email Address (Optional)" class="full-width"><button type="submit" class="action-btn full-width">Register Donor</button></form>
+        </div>
+        
+        <div id="donor-search-view" class="view">
+            <h2>Search Donor Records</h2>
+            <form id="donor-search-form"><input type="text" id="search-last-name" placeholder="Enter Donor's Last Name" required class="full-width"><button type="submit" class="action-btn full-width">Search Records</button></form>
+            <div id="donor-search-results" class="result-container"></div>
+        </div>
+        
+        <div id="comprehensive-report-view" class="view">
+            <h2>Comprehensive Donor Report</h2>
+            <p>Search for a donor to generate their complete donation and screening history.</p>
+            <form id="report-search-form"><input type="text" id="report-search-lastname" placeholder="Enter Donor's Last Name" required class="full-width"><button type="submit" class="action-btn full-width">Search for Donor</button></form>
+            <div id="report-search-results" class="result-container"></div>
+            <div id="comprehensive-report-container"></div>
+        </div>
+
+        <div id="screening-view" class="view">
+            <h2>Pre-Donation Screening (Automated)</h2>
+            <p>Find the donor to screen, or start from the Donor Search page.</p>
+            <form id="screening-search-form"><input type="text" id="screening-search-lastname" placeholder="Search Donor by Last Name" required class="full-width"><button type="submit" class="action-btn full-width">Find Donor</button></form>
+            <div id="screening-search-results" class="result-container"></div>
+            <form id="screening-form" style="display:none; margin-top: 2rem;"><h3 id="screening-donor-name" class="full-width" style="text-align: center; color: var(--color-text-secondary);"></h3><input type="hidden" id="screening-donor-id-raw"><input type="hidden" id="screening-donor-blood-type"><select id="screening-staff-id" required><option value="" disabled selected>-- Select Screening Staff --</option></select><input type="number" step="0.1" id="screening-hemoglobin" placeholder="Hemoglobin (g/dL)" required><input type="number" id="screening-systolic" placeholder="BP Systolic (e.g., 120)" required><input type="number" id="screening-diastolic" placeholder="BP Diastolic (e.g., 80)" required><input type="number" step="0.1" id="screening-weight" placeholder="Weight (kg)" required><textarea id="screening-notes" placeholder="Additional Staff Notes (Optional)" rows="3" class="full-width"></textarea><button type="submit" class="action-btn full-width">Process Screening</button></form>
+        </div>
+
+        <div id="collection-view" class="view">
+             <h2>Donation & Unit Collection</h2>
+             <p>This page is auto-filled after a successful screening. You can also fill it manually.</p>
+             <form id="collection-form" style="margin-top: 2rem;"><select id="collection-donor-id" required><option value="" disabled selected>-- Select Donor --</option></select><input type="number" id="collection-screening-id" placeholder="Enter Eligible Screening ID" required><select id="collection-staff-id" required><option value="" disabled selected>-- Select Phlebotomist --</option></select><input type="text" id="collection-blood-group" placeholder="Blood Group of Donor (e.g. A+)" required><button type="submit" class="action-btn full-width">Record Donation & Create Unit</button></form>
+        </div>
+        
+        <div id="inventory-view" class="view">
+            <h2>Inventory Management</h2>
+            <form id="inventory-update-form"><select id="inventory-unit-id" required><option value="" disabled selected>-- Select Blood Unit to Update --</option></select><select id="inventory-new-status" required><option value="" disabled selected>-- Select New Status --</option><option value="In Stock">In Stock</option><option value="Reserved">Reserved</option><option value="Issued">Issued</option><option value="Quarantined">Quarantined</option><option value="Discarded">Discarded</option></select>
+            <div id="inventory-issue-org-div" style="display:none;" class="full-width"><select id="inventory-issue-org-id"><option value="" disabled selected>-- Select Organization to Issue To --</option></select></div>
+            <button type="submit" class="action-btn full-width">Update Unit Status</button></form>
+        </div>
+
+        <div id="reporting-view" class="view">
+            <h2>Inventory Report</h2>
+            <button id="generate-report-btn" class="action-btn" style="margin: 0 auto 2rem auto; display:block;">Generate Stock Report</button>
+            <div id="report-container"><table id="report-table"><thead><tr><th>Blood Type</th><th>Status</th><th>Count</th></tr></thead><tbody></tbody></table></div>
+        </div>
+
+        <div id="staff-view" class="view">
+            <h2>Robust Staff Management</h2>
+            <div class="view-grid">
+                <div>
+                    <h3>Staff Directory</h3>
+                    <button id="show-add-staff-form-btn" class="action-btn" style="width:100%; margin-bottom: 1rem;">+ Add New Staff</button>
+                    <div id="staff-list-container" class="result-container" style="max-height: 500px; overflow-y: auto;"></div>
+                </div>
+                <div id="staff-details-container" style="display: none;">
+                    <h3 id="staff-details-name"></h3><p id="staff-details-employee-number" style="color: var(--color-text-secondary);"></p><p id="staff-details-uuid" style="color: var(--color-accent-blue); font-size: 0.9rem; word-break: break-all;"></p>
+                    <div style="margin-top: 2rem;">
+                        <h4>Update Role</h4>
+                        <form id="staff-update-role-form" style="grid-template-columns: 2fr 1fr; align-items: center;"><select id="staff-details-role-id"></select><button type="submit" class="action-btn">Update</button></form>
+                    </div>
+                    <div style="margin-top: 2rem;" class="view-grid">
+                        <div><h4>Assigned Tasks</h4><ul id="staff-assigned-tasks-list" class="task-list"></ul></div>
+                        <div><h4>Available Tasks</h4><ul id="staff-available-tasks-list" class="task-list"></ul></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="organization-view" class="view">
+            <h2>Organization & Request Hub</h2>
+            <div class="view-grid">
+                <div>
+                    <h3>Register New Organization</h3>
+                    <form id="organization-registration-form" style="grid-template-columns: 1fr;">
+                        <input type="text" id="org-name" placeholder="Organization Name (e.g., City Hospital)" required>
+                        <select id="org-type" required><option value="" disabled selected>-- Select Type --</option><option value="Hospital">Hospital</option><option value="Clinic">Clinic</option><option value="NGO">NGO</option><option value="Other">Other</option></select>
+                        <input type="text" id="org-contact-person" placeholder="Contact Person">
+                        <input type="tel" id="org-contact-phone" placeholder="Contact Phone">
+                        <input type="email" id="org-contact-email" placeholder="Contact Email">
+                        <button type="submit" class="action-btn">Register Organization</button>
+                    </form>
+                </div>
+                <div>
+                    <h3>Submit Blood Request</h3>
+                    <form id="blood-request-form" style="grid-template-columns: 1fr;">
+                        <select id="request-org-id" required><option value="" disabled selected>-- Select Requesting Organization --</option></select>
+                        <input type="text" id="request-patient-name" placeholder="Patient Name (Optional)">
+                        <select id="request-blood-group" required><option value="" disabled selected>-- Blood Group --</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select>
+                        <input type="number" id="request-quantity" placeholder="Quantity (Units)" required min="1">
+                        <button type="submit" class="action-btn">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+            <div style="margin-top: 3rem;">
+                <h3>Pending Blood Requests</h3>
+                <div id="pending-requests-container" class="result-container">
+                    <table id="requests-table"><thead><tr><th>ID</th><th>Organization</th><th>Blood Type</th><th>Quantity</th><th>Status</th><th>Date</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div id="add-staff-modal">
+        <div style="background:white; padding:2.5rem; border-radius:15px; width:90%; max-width:500px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+           <h2 style="margin-bottom: 1.5rem;">Register New Staff</h2>
+           <form id="staff-registration-form" style="grid-template-columns: 1fr;"><input type="text" id="staff-first-name" placeholder="First Name" required><input type="text" id="staff-last-name" placeholder="Last Name" required><input type="text" id="staff-employee-number" placeholder="Employee Number" required><select id="staff-role-id" required><option value="" disabled selected>-- Select Role --</option></select><div style="display:flex; gap:1rem; margin-top: 1rem;"><button type="submit" class="action-btn" style="flex:2;">Add Staff Member</button><button type="button" id="cancel-add-staff-btn" class="action-btn" style="flex:1; background: var(--color-text-secondary);">Cancel</button></div></form>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2025 MediFlow Blood Bank System. All rights reserved.</p></footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const API_BASE_URL = '/api';
+        let ALL_ROLES = [], ALL_TASKS = [], ALL_STAFF = [], ALL_DONORS = [], ALL_ORGS = [], CURRENT_STAFF = null;
+
+        const navButtons = document.querySelectorAll('nav button');
+        const views = document.querySelectorAll('.view');
+        const statusMessageDiv = document.getElementById('status-message');
+        const addStaffModal = document.getElementById('add-staff-modal');
+
+        function showView(viewId) {
+            views.forEach(v => v.classList.remove('active'));
+            navButtons.forEach(b => b.classList.remove('active'));
+            const activeView = document.getElementById(viewId);
+            const activeButton = document.querySelector(`nav button[data-view-id="${viewId}"]`);
+            if (activeView) activeView.classList.add('active');
+            if (activeButton) activeButton.classList.add('active');
+            statusMessageDiv.style.display = 'none';
+            if (viewId !== 'collection-view') { document.getElementById('collection-form')?.reset(); }
+            
+            const dataLoadViews = ['staff-view', 'screening-view', 'collection-view', 'inventory-view', 'comprehensive-report-view', 'organization-view'];
+            if (dataLoadViews.includes(viewId)) {
+                loadInitialDataForForms();
+            }
+            if(viewId === 'organization-view'){
+                loadPendingRequests();
+            }
+        }
+        navButtons.forEach(button => button.addEventListener('click', () => showView(button.dataset.viewId)));
+
+        function formatDonorId(id) { return `D${String(id).padStart(4, '0')}`; }
+        function formatStaffId(id) { return `S${String(id).padStart(4, '0')}`; }
+        function formatUnitId(id) { return `U${String(id).padStart(4, '0')}`; }
+        function formatOrgId(id) { return `H${String(id).padStart(4, '0')}`; }
+
+        async function loadInitialDataForForms() {
+            try {
+                // Force refresh of data every time
+                ALL_STAFF = await apiFetch('/staff');
+                ALL_DONORS = await apiFetch('/donors/search?last_name=');
+                const ALL_UNITS = await apiFetch('/inventory');
+                ALL_ROLES = await apiFetch('/roles');
+                ALL_TASKS = await apiFetch('/tasks');
+                ALL_ORGS = await apiFetch('/organizations');
+
+                populateStaffDropdown(document.getElementById('screening-staff-id'), ALL_STAFF);
+                populateStaffDropdown(document.getElementById('collection-staff-id'), ALL_STAFF, 'Phlebotomist');
+                populateDonorDropdown(document.getElementById('collection-donor-id'), ALL_DONORS);
+                populateInventoryDropdown(document.getElementById('inventory-unit-id'), ALL_UNITS);
+                populateRoleDropdown(document.getElementById('staff-role-id'), ALL_ROLES);
+                populateOrganizationDropdown(document.getElementById('request-org-id'), ALL_ORGS);
+                populateOrganizationDropdown(document.getElementById('inventory-issue-org-id'), ALL_ORGS);
+
+            } catch (error) { console.error("Could not load initial data for forms", error); }
+        }
+        
+        function populateStaffDropdown(select, list, filter = null) { select.innerHTML = `<option value="" disabled selected>-- Select Staff --</option>`; let f = filter ? list.filter(s => s.role_name === filter) : list; f.forEach(s => { select.innerHTML += `<option value="${s.staff_id}">${s.first_name} ${s.last_name} (${formatStaffId(s.staff_id)})</option>`; }); }
+        function populateDonorDropdown(select, list) { select.innerHTML = `<option value="" disabled selected>-- Select Donor --</option>`; list.forEach(d => { select.innerHTML += `<option value="${d.donor_id}">${d.first_name} ${d.last_name} (${formatDonorId(d.donor_id)})</option>`; }); }
+        function populateInventoryDropdown(select, list) { select.innerHTML = `<option value="" disabled selected>-- Select Unit --</option>`; list.forEach(u => { select.innerHTML += `<option value="${u.unit_id}">${formatUnitId(u.unit_id)} (${u.blood_type}) - ${u.status}</option>`; }); }
+        function populateRoleDropdown(select, list) { select.innerHTML = `<option value="" disabled selected>-- Select Role --</option>`; list.forEach(r => { select.innerHTML += `<option value="${r.role_id}">${r.role_name}</option>`; }); }
+        function populateOrganizationDropdown(select, list) { select.innerHTML = `<option value="" disabled selected>-- Select Organization --</option>`; list.forEach(o => { select.innerHTML += `<option value="${o.org_id}">${o.name} (${formatOrgId(o.org_id)})</option>`; }); }
+
+        function showStatusMessage(message, type) { statusMessageDiv.textContent = message; statusMessageDiv.className = type; statusMessageDiv.style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        async function apiFetch(endpoint, method = 'GET', body = null) {
+            const options = { method, headers: { 'Content-Type': 'application/json' } };
+            if (body) options.body = JSON.stringify(body);
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || `HTTP error! Status: ${response.status}`);
+                return result;
+            } catch (error) { showStatusMessage(error.message, 'error'); throw error; }
+        }
+        
+        document.getElementById('donor-registration-form').addEventListener('submit', async e => { e.preventDefault(); try { await apiFetch('/donors', 'POST', { first_name: document.getElementById('reg-first-name').value, last_name: document.getElementById('reg-last-name').value, date_of_birth: document.getElementById('reg-dob').value, gender: document.getElementById('reg-gender').value, blood_group: document.getElementById('reg-blood-group').value, phone_number: document.getElementById('reg-phone').value, email: document.getElementById('reg-email').value }); showStatusMessage('Donor registered successfully!', 'success'); e.target.reset(); ALL_DONORS = []; } catch (error) {} });
+        
+        const donorSearchResults = document.getElementById('donor-search-results');
+        donorSearchResults.addEventListener('click', (e) => { 
+            let target = e.target;
+            while (target && !target.classList.contains('start-screening-btn')) { target = target.parentElement; }
+            if (target && target.classList.contains('start-screening-btn')) { startScreeningWorkflow(JSON.parse(target.dataset.donor)); } 
+        });
+        document.getElementById('donor-search-form').addEventListener('submit', async e => { e.preventDefault(); const lastName = document.getElementById('search-last-name').value; donorSearchResults.innerHTML = `<p>Searching...</p>`; try { const donors = await apiFetch(`/donors/search?last_name=${encodeURIComponent(lastName)}`); donorSearchResults.innerHTML = donors.length ? '' : `<p>No donors found.</p>`; donors.forEach(d => { const card = document.createElement('div'); card.className = 'result-card'; card.innerHTML = `<div><strong>Name:</strong> ${d.first_name} ${d.last_name}<br><small>ID: ${formatDonorId(d.donor_id)}</small></div><button class="action-btn start-screening-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Start Screening</button>`; card.querySelector('.start-screening-btn').dataset.donor = JSON.stringify(d); donorSearchResults.appendChild(card); }); } catch (error) { donorSearchResults.innerHTML = `<p>Error fetching donors.</p>`; } });
+        
+        const screeningForm = document.getElementById('screening-form');
+        const screeningSearchForm = document.getElementById('screening-search-form');
+        const screeningSearchResults = document.getElementById('screening-search-results');
+        function startScreeningWorkflow(donor) { showView('screening-view'); document.getElementById('screening-donor-id-raw').value = donor.donor_id; document.getElementById('screening-donor-blood-type').value = donor.blood_type; document.getElementById('screening-donor-name').textContent = `Screening Vitals for: ${donor.first_name} ${donor.last_name}`; screeningForm.style.display = 'grid'; screeningSearchResults.innerHTML = ''; screeningSearchForm.reset(); }
+        screeningSearchForm.addEventListener('submit', async e => { e.preventDefault(); const lastName = document.getElementById('screening-search-lastname').value; screeningSearchResults.innerHTML = `<p>Searching...</p>`; screeningForm.style.display = 'none'; try { const donors = await apiFetch(`/donors/search?last_name=${encodeURIComponent(lastName)}`); screeningSearchResults.innerHTML = donors.length ? '' : `<p>No donors found.</p>`; donors.forEach(d => { const card = document.createElement('div'); card.className = 'result-card'; card.innerHTML = `<div><strong>Name:</strong> ${d.first_name} ${d.last_name}<br><small>ID: ${formatDonorId(d.donor_id)}</small></div><button class="action-btn start-screening-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Start Screening</button>`; card.querySelector('.start-screening-btn').dataset.donor = JSON.stringify(d); screeningSearchResults.appendChild(card); }); } catch (error) { screeningSearchResults.innerHTML = `<p>Error fetching donors.</p>`; } });
+        screeningForm.addEventListener('submit', async e => { e.preventDefault(); try { const result = await apiFetch('/screenings', 'POST', { donor_id: document.getElementById('screening-donor-id-raw').value, staff_id: document.getElementById('screening-staff-id').value, hemoglobin: document.getElementById('screening-hemoglobin').value, bp_systolic: document.getElementById('screening-systolic').value, bp_diastolic: document.getElementById('screening-diastolic').value, weight_kg: document.getElementById('screening-weight').value, additional_notes: document.getElementById('screening-notes').value }); if (result.is_eligible) { showStatusMessage(`Screening SUCCESSFUL. ID: ${String(result.screening_id).padStart(4, '0')}. Moving to Collection...`, 'success'); setTimeout(() => { showView('collection-view'); document.getElementById('collection-donor-id').value = document.getElementById('screening-donor-id-raw').value; document.getElementById('collection-screening-id').value = result.screening_id; document.getElementById('collection-blood-group').value = document.getElementById('screening-donor-blood-type').value; }, 2500); } else { showStatusMessage(`Screening FAILED. Reason: ${result.notes}`, 'error'); } e.target.reset(); screeningForm.style.display = 'none'; } catch (error) {} });
+        
+        document.getElementById('collection-form').addEventListener('submit', async e => { e.preventDefault(); const donorId = document.getElementById('collection-donor-id').value; if (!donorId) { showStatusMessage('Please select a donor from the dropdown.', 'error'); return; } try { const result = await apiFetch('/donations', 'POST', { donor_id: donorId, screening_id: document.getElementById('collection-screening-id').value, staff_id: document.getElementById('collection-staff-id').value, blood_group: document.getElementById('collection-blood-group').value }); showStatusMessage(`Success! New Unit ID: ${formatUnitId(result.unit_id)}`, 'success'); e.target.reset(); } catch (error) {} });
+        
+        document.getElementById('inventory-new-status').addEventListener('change', (e) => { document.getElementById('inventory-issue-org-div').style.display = (e.target.value === 'Issued') ? 'block' : 'none'; });
+        document.getElementById('inventory-update-form').addEventListener('submit', async e => { e.preventDefault(); const unitId = document.getElementById('inventory-unit-id').value; const newStatus = document.getElementById('inventory-new-status').value; let orgId = null; if (newStatus === 'Issued') { orgId = document.getElementById('inventory-issue-org-id').value; if (!orgId) { showStatusMessage('Please select an organization to issue to.', 'error'); return; } } try { const result = await apiFetch(`/inventory/${unitId}`, 'PUT', { status: newStatus, org_id: orgId }); showStatusMessage(result.message, 'success'); e.target.reset(); document.getElementById('inventory-issue-org-div').style.display = 'none'; loadInitialDataForForms(); } catch (error) {} });
+        
+        document.getElementById('generate-report-btn').addEventListener('click', async () => { const reportBody = document.querySelector('#report-table tbody'); reportBody.innerHTML = `<tr><td colspan="3">Generating report...</td></tr>`; try { const reportData = await apiFetch('/reports/inventory'); reportBody.innerHTML = reportData.length ? '' : `<tr><td colspan="3">No inventory data found.</td></tr>`; reportData.forEach(item => { const row = reportBody.insertRow(); row.innerHTML = `<td>${item.blood_type}</td><td>${item.status}</td><td>${item.count}</td>`; }); } catch (error) { reportBody.innerHTML = `<tr><td colspan="3">Error fetching report.</td></tr>`; } });
+        
+        document.getElementById('report-search-form').addEventListener('submit', async e => { e.preventDefault(); const lastName = document.getElementById('report-search-lastname').value; const resultsContainer = document.getElementById('report-search-results'); document.getElementById('comprehensive-report-container').innerHTML = ''; resultsContainer.innerHTML = `<p>Searching...</p>`; try { const donors = await apiFetch(`/donors/search?last_name=${encodeURIComponent(lastName)}`); resultsContainer.innerHTML = donors.length ? '' : `<p>No donors found.</p>`; donors.forEach(d => { const card = document.createElement('div'); card.className = 'result-card'; card.innerHTML = `<div><strong>Name:</strong> ${d.first_name} ${d.last_name}<br><small>ID: ${formatDonorId(d.donor_id)}</small></div><button class="action-btn generate-full-report-btn" data-donor-id="${d.donor_id}">Generate Report</button>`; resultsContainer.appendChild(card); }); } catch (error) { resultsContainer.innerHTML = `<p>Error fetching donors.</p>`; } });
+        document.getElementById('report-search-results').addEventListener('click', async e => { if (e.target && e.target.classList.contains('generate-full-report-btn')) { const donorId = e.target.dataset.donorId; const reportContainer = document.getElementById('comprehensive-report-container'); reportContainer.innerHTML = '<p>Generating report...</p>'; try { const data = await apiFetch(`/donors/${donorId}/report`); renderComprehensiveReport(data); } catch (error) { reportContainer.innerHTML = '<p>Could not generate report.</p>'; } } });
+        function renderComprehensiveReport(data) { const container = document.getElementById('comprehensive-report-container'); const d = data.donor_details; let html = `<div class="donor-report-header"><h2>Report for ${d.first_name} ${d.last_name}</h2><p><strong>Donor ID:</strong> ${formatDonorId(d.donor_id)} | <strong>Blood Type:</strong> ${d.blood_type}</p></div><h3>History</h3>`; if (data.history.length === 0) { html += '<p>No history found.</p>'; } else { data.history.forEach(item => { html += `<div class="history-item"><div class="history-header"><span>Screening ID: ${String(item.screening_id).padStart(4, '0')} on ${item.screening_date}</span><span class="${item.is_eligible ? 'success' : 'error'}">${item.is_eligible ? 'ELIGIBLE' : 'NOT ELIGIBLE'}</span></div><div class="history-body"><p><strong>Notes:</strong> ${item.notes || 'N/A'}</p><p><strong>Screener:</strong> ${item.screener_fname || ''} ${item.screener_lname || ''}</p></div>`; if(item.donation_id) { html += `<div class="history-header" style="background-color: #f0f4f8;"><span>Donation ID: ${item.donation_id}</span></div><div class="history-body"><p><strong>Phlebotomist:</strong> ${item.phleb_fname || ''} ${item.phleb_lname || ''}</p><p><strong>Unit ID:</strong> ${formatUnitId(item.unit_id)}</p><p><strong>Unit Status:</strong> ${item.unit_status}</p><p><strong>Expiry:</strong> ${item.expiry_date}</p><p><strong>Issued To:</strong> ${item.issued_to_org || 'N/A'}</p><div><button class="action-btn goto-inventory-btn" data-unit-id="${item.unit_id}" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Manage Unit</button></div></div>`; } html += `</div>`; }); } container.innerHTML = html; }
+        document.getElementById('comprehensive-report-container').addEventListener('click', (e) => { if (e.target && e.target.classList.contains('goto-inventory-btn')) { const unitId = e.target.dataset.unitId; showView('inventory-view'); setTimeout(() => { document.getElementById('inventory-unit-id').value = unitId; }, 100); } });
+        
+        const staffListContainer = document.getElementById('staff-list-container'); const staffDetailsContainer = document.getElementById('staff-details-container');
+        async function initializeStaffManagement() { staffDetailsContainer.style.display = 'none'; try { const [staff, roles, tasks] = await Promise.all([apiFetch('/staff'), apiFetch('/roles'), apiFetch('/tasks')]); ALL_ROLES = roles; ALL_TASKS = tasks; ALL_STAFF = staff; renderStaffList(staff); populateRoleDropdown(document.getElementById('staff-role-id'), ALL_ROLES); } catch(error) { staffListContainer.innerHTML = `<p>Error loading staff data.</p>`; } }
+        function renderStaffList(staffList) { staffListContainer.innerHTML = staffList.length ? '' : '<p>No staff members found.</p>'; staffList.forEach(staff => { const card = document.createElement('div'); card.className = 'staff-list-item'; card.dataset.staffId = staff.staff_id; card.innerHTML = `<strong>${staff.first_name} ${staff.last_name}</strong><br><small>${staff.role_name}</small>`; card.addEventListener('click', () => { document.querySelectorAll('.staff-list-item').forEach(item => item.classList.remove('selected')); card.classList.add('selected'); loadStaffDetails(staff); }); staffListContainer.appendChild(card); }); }
+        async function loadStaffDetails(staff) { CURRENT_STAFF = staff; staffDetailsContainer.style.display = 'block'; document.getElementById('staff-details-name').textContent = `${staff.first_name} ${staff.last_name}`; document.getElementById('staff-details-employee-number').textContent = `Employee #: ${staff.employee_number}`; document.getElementById('staff-details-uuid').textContent = `Staff ID: ${formatStaffId(staff.staff_id)}`; const roleDropdown = document.getElementById('staff-details-role-id'); populateRoleDropdown(roleDropdown, ALL_ROLES); roleDropdown.value = staff.role_id; try { const assignedTasks = await apiFetch(`/staff/${staff.staff_id}/tasks`); renderTaskLists(assignedTasks); } catch (error) { document.getElementById('staff-assigned-tasks-list').innerHTML = '<li>Error loading tasks</li>'; } }
+        function renderTaskLists(assignedTasks) { const assignedList = document.getElementById('staff-assigned-tasks-list'); const availableList = document.getElementById('staff-available-tasks-list'); assignedList.innerHTML = ''; availableList.innerHTML = ''; const assignedTaskIds = new Set(assignedTasks.map(t => t.task_id)); ALL_TASKS.forEach(task => { const li = document.createElement('li'); if (assignedTaskIds.has(task.task_id)) { li.innerHTML = `<span>${task.task_name}</span> <button class="remove-task" data-task-id="${task.task_id}">Remove</button>`; assignedList.appendChild(li); } else { li.innerHTML = `<span>${task.task_name}</span> <button class="assign-task" data-task-id="${task.task_id}">Assign</button>`; availableList.appendChild(li); } }); if (assignedList.innerHTML === '') assignedList.innerHTML = '<li>No tasks assigned.</li>'; if (availableList.innerHTML === '') availableList.innerHTML = '<li>All tasks assigned.</li>'; }
+        document.getElementById('staff-update-role-form').addEventListener('submit', async e => { e.preventDefault(); if (!CURRENT_STAFF) return; const newRoleId = document.getElementById('staff-details-role-id').value; try { const result = await apiFetch(`/staff/${CURRENT_STAFF.staff_id}`, 'PUT', { role_id: newRoleId }); showStatusMessage(result.message, 'success'); initializeStaffManagement(); } catch (error) {} });
+        staffDetailsContainer.addEventListener('click', async e => { if (e.target?.classList.contains('remove-task')) { const taskId = e.target.dataset.taskId; try { await apiFetch(`/staff/${CURRENT_STAFF.staff_id}/tasks/${taskId}`, 'DELETE'); loadStaffDetails(CURRENT_STAFF); } catch(error) {} } if (e.target?.classList.contains('assign-task')) { const taskId = e.target.dataset.taskId; try { await apiFetch(`/staff/${CURRENT_STAFF.staff_id}/tasks`, 'POST', { task_id: taskId }); loadStaffDetails(CURRENT_STAFF); } catch(error) {} } });
+        document.getElementById('show-add-staff-form-btn').addEventListener('click', () => addStaffModal.style.display = 'flex');
+        document.getElementById('cancel-add-staff-btn').addEventListener('click', () => addStaffModal.style.display = 'none');
+        document.getElementById('staff-registration-form').addEventListener('submit', async e => { e.preventDefault(); try { await apiFetch('/staff', 'POST', { first_name: document.getElementById('staff-first-name').value, last_name: document.getElementById('staff-last-name').value, employee_number: document.getElementById('staff-employee-number').value, role_id: document.getElementById('staff-role-id').value }); showStatusMessage('Staff member added successfully!', 'success'); e.target.reset(); addStaffModal.style.display = 'none'; ALL_STAFF = []; initializeStaffManagement(); } catch(error) {} });
+
+        document.getElementById('organization-registration-form').addEventListener('submit', async e => { e.preventDefault(); try { await apiFetch('/organizations', 'POST', { name: document.getElementById('org-name').value, org_type: document.getElementById('org-type').value, contact_person: document.getElementById('org-contact-person').value, contact_phone: document.getElementById('org-contact-phone').value, contact_email: document.getElementById('org-contact-email').value }); showStatusMessage('Organization registered successfully!', 'success'); e.target.reset(); loadInitialDataForForms(); } catch (error) {} });
+        document.getElementById('blood-request-form').addEventListener('submit', async e => { e.preventDefault(); try { await apiFetch('/blood_requests', 'POST', { org_id: document.getElementById('request-org-id').value, patient_name: document.getElementById('request-patient-name').value, blood_group: document.getElementById('request-blood-group').value, quantity: document.getElementById('request-quantity').value }); showStatusMessage('Blood request submitted successfully!', 'success'); e.target.reset(); loadPendingRequests(); } catch (error) {} });
+        async function loadPendingRequests() { const tableBody = document.querySelector('#requests-table tbody'); tableBody.innerHTML = `<tr><td colspan="6">Loading requests...</td></tr>`; try { const requests = await apiFetch('/blood_requests'); tableBody.innerHTML = requests.length ? '' : `<tr><td colspan="6">No pending requests found.</td></tr>`; requests.forEach(r => { const row = tableBody.insertRow(); row.innerHTML = `<td>${r.request_id}</td><td>${r.org_name}</td><td>${r.blood_type}</td><td>${r.quantity}</td><td>${r.status}</td><td>${r.request_date}</td>`; }); } catch (error) { tableBody.innerHTML = `<tr><td colspan="6">Error loading requests.</td></tr>`; } }
+
+        // --- INITIAL LOAD ---
+        showView('donor-registration-view');
+    });
+    </script>
+</body>
+</html>
