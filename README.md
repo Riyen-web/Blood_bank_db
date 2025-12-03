@@ -46,6 +46,15 @@ The system replaces manual record-keeping with a secure, centralized database, e
 
 ---
 
+<img width="1468" height="925" alt="Screenshot 2025-12-03 110553" src="https://github.com/user-attachments/assets/607452da-8dcc-462d-9187-47b936a5b8e9" />
+<img width="1447" height="843" alt="Screenshot 2025-12-03 110559" src="https://github.com/user-attachments/assets/29ffddfd-6f1a-48da-9e83-0527fb934928" />
+<img width="1627" height="877" alt="Screenshot 2025-12-03 110402" src="https://github.com/user-attachments/assets/8e69cb9d-7e3c-439c-bd3e-c906c7129770" />
+<img width="1553" height="873" alt="Screenshot 2025-12-03 110434" src="https://github.com/user-attachments/assets/7e572515-36ae-42dc-9923-ac5e4c95ad5a" />
+<img width="1578" height="779" alt="Screenshot 2025-12-03 110528" src="https://github.com/user-attachments/assets/8b9d0766-fb85-45b9-b061-ae44e763c2dd" />
+<img width="1518" height="857" alt="Screenshot 2025-12-03 110538" src="https://github.com/user-attachments/assets/0eff9a88-c850-4ded-bce3-ef2d51e0e326" />
+<img width="1452" height="791" alt="Screenshot 2025-12-03 110545" src="https://github.com/user-attachments/assets/cdd7f1fa-5c65-4339-b662-3c490fac9be3" />
+
+
 ## 📂 Project Structure
 
 ```text
